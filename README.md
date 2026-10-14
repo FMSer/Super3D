@@ -2,6 +2,8 @@
 
 Super3D is an easy-to-use 3D scene design tool: place cubes, spheres, cylinders, cones, torus and planes with the mouse, keyframe animations on a timeline, and drive the scene with a lightweight scripting language (**SuperScript**) — variables, functions, arrays, events and math. Full Chinese UI and Chinese keyword aliases.
 
+![Super3D main UI](screenshot.png)
+
 ## Features
 
 - **3D scene editing** — 6 primitives + groups, scene tree, property panel, move/rotate/scale gizmos
