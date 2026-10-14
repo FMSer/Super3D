@@ -1,0 +1,47 @@
+# --- Visual Studio ---
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# --- Build outputs ---
+Debug/
+Release/
+x64/
+Win32/
+ipch/
+[Bb]in/
+[Oo]bj/
+*.obj
+*.pch
+*.pdb
+*.ilk
+*.exp
+*.idb
+*.res
+*.tlb
+*.tlh
+*.sbr
+*.bsc
+*.ncb
+
+# --- VS C++ intellisense database ---
+*.VC.db
+*.VC.opendb
+*.sdf
+*.ipch
+
+# --- Logs & local scratch ---
+*.log
+_out/
+_smoke/
+
+# --- Temp working files ---
+_build_log.txt
+_*.py
+git.bat
+
+# --- macOS / misc ---
+.DS_Store
+Thumbs.db

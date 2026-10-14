@@ -1,0 +1,70 @@
+﻿# Super3D Project v1
+camera yaw=-45.000000 pitch=30.000000 dist=20.000000 tx=0.000000 ty=0.000000 tz=0.000000
+fps=24
+frames=300
+loop=1
+script_per_frame=1
+layers=1
+layer_def name=默认 visible=1 locked=0
+cur_layer=0
+
+obj name=地面 type=1 parent= visible=1 locked=0 layer=0 color=0.22,0.32,0.22 params=20,0.4,14,0 seg=8 tf=0,-0.2,0,0,0,0,1,1,1
+obj name=坦克体 type=1 parent= visible=1 locked=0 layer=0 color=0.35,0.6,0.25 params=1.6,0.5,1.2,0 seg=8 tf=0,0.5,5,0,0,0,1,1,1
+obj name=坦克塔 type=1 parent=坦克体 visible=1 locked=0 layer=0 color=0.22,0.42,0.18 params=1.0,0.45,1.0,0 seg=8 tf=0,0.55,0,0,0,0,1,1,1
+obj name=坦克炮 type=1 parent=坦克体 visible=1 locked=0 layer=0 color=0.12,0.12,0.12 params=0.22,0.22,1.4,0 seg=8 tf=0,0.65,-0.85,0,0,0,1,1,1
+obj name=敌1 type=1 parent= visible=1 locked=0 layer=0 color=0.78,0.22,0.18 params=1.4,0.5,1.1,0 seg=8 tf=5,0.5,-4,0,0,0,1,1,1
+obj name=敌2 type=1 parent= visible=1 locked=0 layer=0 color=0.9,0.6,0.15 params=1.4,0.5,1.1,0 seg=8 tf=-5,0.5,-5,0,0,0,1,1,1
+obj name=子弹 type=1 parent= visible=0 locked=0 layer=0 color=1,0.92,0.2 params=0.18,0.18,0.18,0 seg=8 tf=0,0.7,4,0,0,0,1,1,1
+script_len=1772
+var score = 0;
+var hp = 3;
+var 敌1dir = 1;
+var 敌2dir = -1;
+function onEnterFrame(e:Event) {
+    var sp = 0.14;
+    if (Key.isDown(Key.W) || Key.isDown(Key.UP)) 坦克体.z = 坦克体.z - sp;
+    if (Key.isDown(Key.S) || Key.isDown(Key.DOWN)) 坦克体.z = 坦克体.z + sp;
+    if (Key.isDown(Key.A) || Key.isDown(Key.LEFT)) 坦克体.x = 坦克体.x - sp;
+    if (Key.isDown(Key.D) || Key.isDown(Key.RIGHT)) 坦克体.x = 坦克体.x + sp;
+    if (Key.isDown(Key.SPACE) && 子弹.visible == 0) {
+        子弹.visible = 1;
+        子弹.x = 坦克体.x;
+        子弹.z = 坦克体.z - 1.2;
+    }
+    if (子弹.visible == 1) {
+        子弹.z = 子弹.z - 0.8;
+        if (绝对值(子弹.x - 敌1.x) < 0.8 && 绝对值(子弹.z - 敌1.z) < 0.8 && 敌1.visible == 1) {
+            敌1.visible = 0;
+            子弹.visible = 0;
+            score = score + 1;
+        }
+        if (绝对值(子弹.x - 敌2.x) < 0.8 && 绝对值(子弹.z - 敌2.z) < 0.8 && 敌2.visible == 1) {
+            敌2.visible = 0;
+            子弹.visible = 0;
+            score = score + 1;
+        }
+        if (子弹.z < -8 || 子弹.z > 8) 子弹.visible = 0;
+    }
+    敌1.x = 敌1.x + 0.05 * 敌1dir;
+    if (敌1.x > 6) 敌1dir = -1;
+    if (敌1.x < -6) 敌1dir = 1;
+    敌2.x = 敌2.x + 0.04 * 敌2dir;
+    if (敌2.x > 6) 敌2dir = -1;
+    if (敌2.x < -6) 敌2dir = 1;
+    if (敌1.visible == 1 && 绝对值(坦克体.x - 敌1.x) < 1.2 && 绝对值(坦克体.z - 敌1.z) < 1.2) {
+        hp = hp - 1;
+        敌1.visible = 0;
+    }
+    if (敌2.visible == 1 && 绝对值(坦克体.x - 敌2.x) < 1.2 && 绝对值(坦克体.z - 敌2.z) < 1.2) {
+        hp = hp - 1;
+        敌2.visible = 0;
+    }
+    if (hp <= 0) {
+        hudText = "游戏结束！得分=" + score + " 生命=0 点击重新开始";
+    } else if (敌1.visible == 0 && 敌2.visible == 0) {
+        hudText = "胜利！全部敌人消灭 得分=" + score + " 点击重新开始";
+    } else {
+        hudText = "坦克大战 得分=" + score + " 生命=" + hp + "  WASD/方向键移动 空格开火";
+    }
+}
+# end

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SuperScript 语言参考 — Super3D 脚本帮助文档</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Microsoft YaHei","Segoe UI",sans-serif; background:#f4f6f9; color:#222; }
+  header { background:#1b3a5c; color:#fff; padding:18px 28px; }
+  header h1 { font-size:22px; font-weight:600; }
+  header p { font-size:13px; opacity:.8; margin-top:4px; }
+  .wrap { display:flex; min-height:calc(100vh - 76px); }
+  nav { width:260px; background:#fff; border-right:1px solid #dde3ea; padding:14px 0; overflow:auto; position:sticky; top:0; height:calc(100vh - 76px); }
+  nav a { display:block; padding:7px 22px; color:#34506b; text-decoration:none; font-size:13.5px; border-left:3px solid transparent; }
+  nav a:hover { background:#eef3f8; }
+  nav a.sel { background:#e3edf6; border-left-color:#1b3a5c; font-weight:600; }
+  nav .grp { padding:10px 22px 4px; font-size:11.5px; color:#8a9bb0; text-transform:uppercase; letter-spacing:1px; }
+  main { flex:1; padding:28px 40px 80px; max-width:960px; }
+  h2 { font-size:20px; color:#1b3a5c; border-bottom:2px solid #1b3a5c; padding-bottom:6px; margin:34px 0 14px; }
+  h2:first-child { margin-top:0; }
+  h3 { font-size:16px; color:#2c5a8c; margin:24px 0 8px; }
+  p, li { font-size:14px; line-height:1.75; }
+  ul, ol { padding-left:22px; margin:8px 0; }
+  code { font-family:Consolas,"Courier New",monospace; background:#eef1f5; border:1px solid #dde3ea; border-radius:3px; padding:1px 5px; font-size:13px; color:#a33327; }
+  pre { background:#16222e; color:#e6edf3; border-radius:6px; padding:14px 16px; margin:10px 0; overflow:auto; font-size:13px; line-height:1.6; }
+  pre code { background:none; border:none; color:inherit; padding:0; }
+  .sig { background:#e8f0fa; border-left:4px solid #1b3a5c; padding:8px 14px; font-family:Consolas,"Courier New",monospace; font-size:14px; color:#16304d; margin:10px 0; border-radius:0 4px 4px 0; }
+  .note { background:#fff8e6; border:1px solid #f0dc9a; border-radius:4px; padding:8px 14px; font-size:13px; margin:10px 0; color:#6b5200; }
+  table { border-collapse:collapse; width:100%; margin:10px 0; font-size:13.5px; }
+  th, td { border:1px solid #d5dde5; padding:6px 10px; text-align:left; }
+  th { background:#eef2f7; color:#1b3a5c; }
+  .kw { color:#9a4dbb; }
+  .fn { color:#c3562a; }
+  .str { color:#5c9a2e; }
+  .cmt { color:#7f8c98; }
+</style>
+</head>
+<body>
+<header>
+  <h1>SuperScript 语言参考</h1>
+  <p>Super3D 脚本语言参考 — 面向场景元件编程的脚本语言，支持面向对象与事件驱动</p>
+</header>
+<div class="wrap">
+<nav>
+  <div class="grp">入门</div>
+  <a href="#overview">概述</a>
+  <a href="#usage">脚本怎么用</a>
+  <a href="#editor">文档类编辑器（.ss）</a>
+  <div class="grp">全局函数</div>
+  <a href="#fn-print">print() / trace()</a>
+  <a href="#fn-math">sin() cos() tan() sqrt()</a>
+  <a href="#fn-abs">abs() min() max() random()</a>
+  <a href="#fn-play">play() stop() gotoFrame()</a>
+  <a href="#fn-conv">Number() int() String() Boolean()</a>
+  <div class="grp">类</div>
+  <a href="#cls-obj">Object3D 元件</a>
+  <a href="#cls-math">Math</a>
+  <a href="#cls-key">Key</a>
+  <a href="#cls-stage">stage</a>
+  <a href="#cls-kbe">KeyboardEvent</a>
+  <a href="#cls-event">Event</a>
+  <a href="#cls-arr">Array / String</a>
+  <div class="grp">语言要素</div>
+  <a href="#keyframescript">关键帧脚本（帧动作）</a>
+  <a href="#docclass">文档类脚本</a>
+  <a href="#vars">变量与类型</a>
+  <a href="#funcs">函数定义</a>
+  <a href="#events">事件与每帧执行</a>
+  <a href="#ops">运算符 / 关键字 / 注释</a>
+  <a href="#stmt-extra">语句增强（switch / do-while / for-in / try）</a>
+  <a href="#op-extra">运算符增强（三元 / 严格 / typeof / is / as）</a>
+  <a href="#fn-global2">全局函数（isNaN / parseInt / getTimer / setInterval）</a>
+  <a href="#m-arrstr">Array / String / Number 方法</a>
+  <a href="#prop-extra">增强属性（rotationX / scaleX / parent）</a>
+  <div class="grp">示例</div>
+  <a href="#ex-keys">键盘小游戏</a>
+  <a href="#ex-tank">坦克大战（完整脚本）</a>
+  <div class="grp">兼容</div>
+  <a href="#compat">中文兼容写法</a>
+</nav>
+<main>
+
+<h2 id="overview">概述</h2>
+<p><b>SuperScript</b> 是 Super3D 的脚本语言，语法简洁现代：支持变量、函数、数组、对象属性、事件监听与数学运算。脚本直接以 <b>英文标识符</b> 控制场景里的元件（元件名、函数名、变量名均使用英文）。</p>
+<p>示例内置场景（小房子 house、风车 windmill、太阳系 solar system、弹跳球 bouncing ball、坦克大战 tank battle）全部使用英文元件名与英文脚本，可直接作为学习模板。</p>
+
+<h2 id="usage">脚本怎么用</h2>
+<p>Super3D 有<b>两类脚本入口</b>，可以同时使用：</p>
+<ol>
+  <li><b>文档类脚本（.ss，推荐）</b>：菜单【文件 → 文档类脚本…】或点击文档 Tab 的 <code>.ss</code> 标签打开整个工程的文档类编辑器；
+      它控制整个程序运行的整个周期（构造一次 → onEnterFrame 每帧 → 键盘事件全程）。</li>
+  <li><b>关键帧脚本</b>：在时间轴关键帧（含空白关键帧）上右键【编辑此关键帧脚本…】挂独立脚本，播放进入该帧时执行一次。</li>
+  <li>桌面调试：菜单【控制】→【调试】；发布：菜单【文件】→【导出】生成 three.js 单文件 HTML（同一份脚本在桌面与导出网页中执行结果一致）。</li>
+  <li>脚本运行时的 <code>trace() / print()</code> 输出显示在底部【输出】面板；语法/运行错误显示在【编译器错误】面板并弹窗提示；
+      <code>hudText</code> 赋值会在 3D 画面上方显示游戏文字。</li>
+</ol>
+<div class="note">元件名大小写敏感：脚本里写 <code>ball.x</code>，场景里元件名必须也是 <code>ball</code>（可在场景树里双击改名）。</div>
+
+<h2 id="editor">文档类编辑器（.ss）</h2>
+<p>每个工程一个文档类文件：<b>与 .s3d 同名、同目录</b>（如 <code>我的作品.s3d</code> 对应 <code>我的作品.ss</code>），保存工程时同名 .ss 同时保存。编辑器功能：</p>
+<ul>
+  <li><b>语法高亮</b>：关键字蓝、类型紫、注释绿、字符串暗红、数字蓝。</li>
+  <li><b>代码自动补全</b>：输入 <code>元件名.</code>（如 <code>mc.</code>）后弹出该元件支持的属性候选
+      （<code>x y z rx ry rz rotation rotationX/Y/Z sx sy sz s scaleX/Y/Z visible name parent type segments red green blue</code>），
+      ↑↓ 选择、Enter/Tab 插入、Esc 关闭、双击插入；继续输入可过滤候选。</li>
+  <li><b>回车自动缩进</b>：回车继承上一行缩进；行尾 <code>{</code> 加一级；行首 <code>}</code> 减一级。</li>
+  <li><b>格式化代码</b>：Ctrl+Shift+F 或右键【格式化代码】——按代码缩进规范重排（<code>package/class/function</code> 同级缩进）。</li>
+  <li><b>快捷键</b>：Ctrl+A 全选、Ctrl+C/V/X 复制/粘贴/剪切、Ctrl+Z 撤销、Ctrl+S 保存（.ss 页保存时弹“另存为”）；右键菜单含 撤销/剪切/复制/粘贴/全选/格式化。</li>
+  <li><b>文档 Tab</b>：底部文档 Tab 显示 <code>工程名.s3d | 工程名.ss</code>；点 <code>.ss</code> 标签 × 可关闭（磁盘 .ss 保留，可经文件菜单重新打开）；鼠标悬停标签显示完整文件路径。</li>
+  <li><b>输出与错误</b>：<code>trace()/print()</code> 输出到【输出】面板；脚本错误显示在【编译器错误】面板并弹窗（含第几层第几帧与错误信息），播放/调试自动切换到此框。</li>
+</ul>
+
+<h2 id="keyframescript">关键帧脚本（Flash 式帧动作）</h2>
+<p>时间轴上的每个关键帧（含空白关键帧）都可以挂一段独立的 SuperScript，播放进入该帧时自动执行一次；不同关键帧可挂不同脚本。</p>
+<ol>
+  <li>在时间轴上把某关键帧（实心或空心菱形）上点<b>右键</b> → <b>编辑此关键帧脚本…</b>（或菜单【窗口 → 脚本窗口】编辑当前选中关键帧/空白关键帧的脚本）。</li>
+  <li>在弹出窗口写入 SuperScript（如 <code>enemy.hp -= 10;</code>），点【保存】。</li>
+  <li>播放时进入该帧即执行；时间轴上带橙色小三角的关键帧表示挂有脚本。</li>
+</ol>
+<pre><code>// 帧 20 的关键帧脚本：触发一次剧情
+story.step = 1;
+play();                       // 让时间轴继续播放</code></pre>
+<div class="note">帧脚本与文档类脚本各自独立作用域，可通过元件属性（<code>obj.x</code>、<code>hudText</code> 等）相互交互；桌面调试与导出网页中的执行时机一致。
+播放/调试执行关键帧脚本遇语法或运行错误时，会弹窗报错（含第几层第几帧与错误信息）并自动切换到【编译器错误】面板。</div>
+
+<h2 id="docclass">文档类脚本（Document Class，.ss）</h2>
+<p>整个工程可以像 Flash 一样创建一个“文档类”脚本（<b>Flash 文档类风格：支持 <code>package / import / class / extends</code> 语法</b>）。
+文档类是独立文件：<b>与 .s3d 同名、同目录</b>（<code>我的作品.s3d</code> ↔ <code>我的作品.ss</code>），保存工程时同名 .ss 同时保存。
+文档类影响整个程序运行的整个周期：构造函数在播放开始时执行一次（初始化计分、血量、关卡状态等全局数据）；
+此后 <code>onEnterFrame</code> / <code>addEventListener</code> 回调每帧执行，<code>onKeyDown</code> / <code>onKeyUp</code> 键盘事件全程生效——
+即使时间轴没有任何关键帧脚本也会持续运行。文档类中的其他函数被事件驱动或直接调用后才执行。</p>
+<ol>
+  <li>菜单【文件 → 文档类脚本…】（或点击文档 Tab 的 <code>.ss</code> 标签）打开文档类编辑器，首次打开自动填入模板
+      （<code>super3d.Object3D</code> 基类，替代 flash 的 MovieClip）。</li>
+  <li>按 Flash 文档类风格写入代码，Ctrl+S 保存（.ss 页保存时弹“另存为”选择位置）。</li>
+  <li>点 <code>.ss</code> 标签 × 可关闭编辑器（磁盘 .ss 文件保留，可经文件菜单重新打开）。</li>
+</ol>
+<pre><code>package {
+    import super3d.Object3D;
+
+    public class main extends Object3D {
+        private var hp:int = 100;
+
+        public function main() {
+            // 构造函数：播放开始时执行一次
+            score = 0;
+        }
+
+        public function onEnterFrame(e:Event):void {
+            // 每帧执行
+            ball.ry += 2;
+        }
+
+        public function onKeyDown(e:Event):void {
+            // 键盘按下事件
+            if (e.keyCode == Key.W) ball.x += 5;
+        }
+    }
+}</code></pre>
+<div class="note">文档类生命周期：构造一次（播放开始）→ onEnterFrame 每帧 → 键盘事件全程。编辑播放、调试（Super3DPlayer）、HTML 导出三通道语义一致。
+文档类中加入 <code>stop()</code> 时：时间轴停止播放，但文档类相关代码与帧代码照常执行（Flash 语义）。
+文档类中定义的函数可在主脚本中通过同名调用（导出网页中同一解释器内共享）。
+<code>trace()/print()</code> 输出显示在底部【输出】面板；脚本语法或运行错误显示在【编译器错误】面板并弹窗提示。</div>
+
+<h2 id="fn-print">全局函数 — print() / trace()</h2>
+<div class="sig">function print(text:*):void</div>
+<div class="sig">function trace(...args):void</div>
+<p>把文本输出到输出框（<code>print</code> 与 <code>trace</code> 等价，旧中文写法 <code>输出()</code> 仍兼容）。</p>
+<pre><code>print("Hello World!");            // 输出字符串
+trace("score=" + score);          // 拼接变量
+print(ball.x);                    // 输出元件属性值</code></pre>
+
+<h2 id="fn-math">全局函数 — sin() cos() tan() sqrt()</h2>
+<div class="sig">function sin(angleDeg:Number):Number</div>
+<div class="sig">function cos(angleDeg:Number):Number</div>
+<div class="sig">function tan(angleDeg:Number):Number</div>
+<div class="sig">function sqrt(x:Number):Number</div>
+<p>三角函数<b>按角度（度）</b>计算；而 <code>Math.sin()</code> 等按弧度计算，二者不同。它们用于让元件做圆周/波浪运动，如太阳系公转、弹跳球跳动。</p>
+<pre><code>ball.y = 1 + 4 * abs(sin(frame * 8));   // 弹跳：8 帧一个周期
+mercury.x = 6 * cos(frame * 5);          // 公转 x 分量
+mercury.z = 6 * sin(frame * 5);          // 公转 z 分量</code></pre>
+
+<h2 id="fn-abs">全局函数 — abs() min() max() random()</h2>
+<div class="sig">function abs(x:Number):Number</div>
+<div class="sig">function min(a:Number, b:Number):Number</div>
+<div class="sig">function max(a:Number, b:Number):Number</div>
+<div class="sig">function random():Number</div>
+<p><code>abs</code> 取绝对值；<code>min/max</code> 取较小/较大值；<code>random</code> 返回 0~1 之间的随机数。旧中文写法 <code>绝对值()/最小()/最大()/随机()</code> 仍兼容。</p>
+<pre><code>ball.y = abs(sin(frame * 8));            // 永远取正，形成跳动
+target.x = (random() - 0.5) * 10;        // 随机落点 -5~5
+speed = max(speed, 0.1);                 // 下限保护</code></pre>
+
+<h2 id="fn-play">全局函数 — play() stop() gotoFrame()</h2>
+<div class="sig">function play():void</div>
+<div class="sig">function stop():void</div>
+<div class="sig">function gotoFrame(f:Number):void</div>
+<p>控制场景时间轴播放/停止/跳帧（对应旧中文 <code>播放()/停止()/跳到帧()</code>）。</p>
+<pre><code>if (score &gt; 10) stop();      // 得分超过 10 停止动画
+gotoFrame(0);                 // 回到第 0 帧重播</code></pre>
+
+<h2 id="fn-conv">全局函数 — Number() int() String() Boolean()</h2>
+<div class="sig">function Number(value:*):Number</div>
+<div class="sig">function int(value:*):int</div>
+<div class="sig">function uint(value:*):uint</div>
+<div class="sig">function String(value:*):String</div>
+<div class="sig">function Boolean(value:*):Boolean</div>
+<p>类型转换函数。</p>
+<pre><code>var n:Number = Number("3.5");   // 3.5
+var i:int = int(3.9);           // 3
+var s:String = String(score);   // "100"</code></pre>
+
+<h2 id="cls-obj">类 — Object3D（场景元件）</h2>
+<p>场景里的每个元件都是一个 Object3D 对象。脚本中用<b>元件名</b>直接引用，或用 <code>new</code> 动态创建。</p>
+<h3>属性（可读写）</h3>
+<table>
+  <tr><th>属性</th><th>类型</th><th>说明</th></tr>
+  <tr><td>x, y, z</td><td>Number</td><td>位置（世界坐标）</td></tr>
+  <tr><td>rx, ry, rz</td><td>Number</td><td>旋转角度（度）</td></tr>
+  <tr><td>sx, sy, sz</td><td>Number</td><td>缩放倍数</td></tr>
+  <tr><td>s</td><td>Number</td><td>整体缩放（sx=sy=sz）</td></tr>
+  <tr><td>visible</td><td>Boolean</td><td>是否可见。注意：不可与数字比较，用 if 判断</td></tr>
+  <tr><td>red, green, blue</td><td>Number</td><td>颜色 0~255</td></tr>
+  <tr><td>segments</td><td>Number</td><td>细分（球/圆柱/圆锥越大约圆滑，1~64）</td></tr>
+  <tr><td>name</td><td>String</td><td>元件名</td></tr>
+  <tr><td>type</td><td>Number</td><td>图元类型编号</td></tr>
+</table>
+<h3>new 创建元件</h3>
+<div class="sig">new Type("name") : Object3D</div>
+<p>类型名支持：<code>Box/Cube、Sphere/Ball、Cylinder、Cone、Torus、Plane、Group/Object3D、Spline/Curve、Leaf、Text3D、Tube（方管）、RTube（圆管）、Boolean</code>（及对应中文名）。</p>
+<pre><code>var b:Ball = new Ball("ball9");   // 新建一个球，名为 ball9
+b.x = 3; b.ry = 45;                // 立即控制它
+s.visible = false;                 // 隐藏元件 s</code></pre>
+<div class="note">动态创建的元件与内置元件一样，脚本用它的名字即可继续控制。</div>
+
+<h2 id="cls-math">类 — Math</h2>
+<p>数学对象，<b>三角函数按弧度</b>（内置 <code>sin()/cos()</code> 按角度，两者不同）。</p>
+<h3>常量</h3>
+<ul>
+  <li><code>Math.PI</code> ≈ 3.14159</li>
+  <li><code>Math.E</code> ≈ 2.71828</li>
+</ul>
+<h3>方法</h3>
+<table>
+  <tr><th>方法</th><th>说明</th></tr>
+  <tr><td>Math.sin(x) cos(x) tan(x)</td><td>三角函数（弧度制）</td></tr>
+  <tr><td>Math.asin(x) acos(x) atan(x)</td><td>反三角函数（弧度制）</td></tr>
+  <tr><td>Math.atan2(y, x)</td><td>由坐标求角度（弧度）——坦克转向用它</td></tr>
+  <tr><td>Math.sqrt(x)</td><td>平方根（负数报错）</td></tr>
+  <tr><td>Math.pow(a, b)</td><td>a 的 b 次方</td></tr>
+  <tr><td>Math.abs(x)</td><td>绝对值</td></tr>
+  <tr><td>Math.floor(x) ceil(x) round(x)</td><td>向下/向上取整、四舍五入</td></tr>
+  <tr><td>Math.exp(x) log(x)</td><td>指数 / 自然对数</td></tr>
+  <tr><td>Math.min(a,...) max(a,...)</td><td>最小 / 最大值（可变参数）</td></tr>
+  <tr><td>Math.random()</td><td>0~1 随机数</td></tr>
+</table>
+<pre><code>enemy1.ry = Math.atan2(enemy1.x - playerTank.x, enemy1.z - playerTank.z) * 180 / Math.PI;
+// 弧度转角度后赋给 ry（ry 是度）</code></pre>
+
+<h2 id="cls-key">类 — Key（键盘查询）</h2>
+<div class="sig">Key.isDown(code:Number):Boolean</div>
+<p>查询某个键当前是否按住（播放时按住才返回 true）。常用于 onEnterFrame 内轮询。</p>
+<h3>常量</h3>
+<table>
+  <tr><th>常量</th><th>键码</th><th>说明</th></tr>
+  <tr><td>Key.LEFT / Key.UP / Key.RIGHT / Key.DOWN</td><td>37 / 38 / 39 / 40</td><td>方向键</td></tr>
+  <tr><td>Key.SPACE</td><td>32</td><td>空格</td></tr>
+  <tr><td>Key.A / Key.D / Key.W / Key.S</td><td>65 / 68 / 87 / 83</td><td>WASD</td></tr>
+</table>
+<pre><code>if (Key.isDown(Key.LEFT) || Key.isDown(Key.A)) player.x -= speed;</code></pre>
+
+<h2 id="cls-stage">类 — stage（舞台）</h2>
+<p>舞台对象，负责键盘事件与按键状态。</p>
+<h3>属性</h3>
+<table>
+  <tr><th>属性</th><th>类型</th><th>说明</th></tr>
+  <tr><td>stage.keyCode（或 keyCode）</td><td>Number</td><td>最近一次键盘事件的键码</td></tr>
+</table>
+<h3>方法</h3>
+<div class="sig">stage.addEventListener(type:String, handler:Function):void</div>
+<p>注册舞台事件监听，事件类型用 <code>KeyboardEvent.KEY_DOWN / KeyboardEvent.KEY_UP / Event.ENTER_FRAME</code> 常量，处理器传<b>函数名</b>。这是事件驱动写法，比在 onEnterFrame 里轮询 <code>Key.isDown</code> 更省、更顺滑。</p>
+<pre><code>stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+function onKeyDown(e) { if (e == 87 || e == 38) mv = 1; }   // e 是键码
+function onKeyUp(e)   { if (e == 87 || e == 38) mv = 0; }</code></pre>
+
+<h2 id="cls-kbe">类 — KeyboardEvent</h2>
+<table>
+  <tr><th>常量</th><th>值</th><th>说明</th></tr>
+  <tr><td>KeyboardEvent.KEY_DOWN</td><td>"keyDown"</td><td>按键按下事件（回调参数 e=键码数字）</td></tr>
+  <tr><td>KeyboardEvent.KEY_UP</td><td>"keyUp"</td><td>按键抬起事件（回调参数 e=键码数字）</td></tr>
+</table>
+<p>回调函数形如 <code>function onKey(e) {...}</code>，参数 <code>e</code> 为键码：A=65 D=68 W=87 S=83 ←=37 ↑=38 →=39 ↓=40 空格=32。</p>
+
+<h2 id="cls-event">类 — Event</h2>
+<table>
+  <tr><th>常量</th><th>值</th><th>说明</th></tr>
+  <tr><td>Event.ENTER_FRAME</td><td>"enterFrame"</td><td>每帧触发事件</td></tr>
+</table>
+<pre><code>stage.addEventListener(Event.ENTER_FRAME, update);
+function update() { ball.ry += 2; }</code></pre>
+
+<h2 id="cls-arr">类 — Array / String</h2>
+<h3>Array 数组</h3>
+<div class="sig">var list:Array = [a, b];</div>
+<ul>
+  <li><code>list.length</code> — 元素个数</li>
+  <li><code>list.push(c)</code> — 追加元素</li>
+  <li><code>list[0].x += 1</code> — 下标访问（可与元件数组结合）</li>
+</ul>
+<h3>String 字符串</h3>
+<ul>
+  <li><code>"abc".length</code> — 长度</li>
+  <li><code>s.charAt(0)</code> — 取第 0 个字符</li>
+  <li><code>s.substring(0,2)</code> / <code>s.substr(0,2)</code> — 子串</li>
+  <li>单引号 <code>'...'</code> 双引号 <code>"..."</code> 都可以</li>
+</ul>
+
+<h2 id="vars">变量与类型</h2>
+<div class="sig">var name:Type = value;</div>
+<p>类型标注可写可省略（Number / String / Boolean / Array / Object3D）。变量用 <code>var</code> 声明（旧中文 <code>定义</code> 兼容）。</p>
+<pre><code>var speed:Number = 0.3;
+var score:Number = 0;
+var name:String = "tank";
+var list:Array = [1, 2, 3];</code></pre>
+
+<h2 id="funcs">函数定义</h2>
+<div class="sig">function name(params):ReturnType { ... }</div>
+<p>用 <code>function</code> 定义（旧中文 <code>函数</code> 兼容），<code>return</code> 返回结果。函数名使用英文。</p>
+<pre><code>function hitWall(x, z) {
+    if (Math.abs(x) &lt; 3.5) return true;
+    return false;
+}
+function playerFire() { ba = 1; bd = playerTank.ry; }</code></pre>
+
+<h2 id="events">事件与每帧执行</h2>
+<p>三种驱动方式（可同时使用）：</p>
+<ol>
+  <li><b>onEnterFrame 函数</b>：定义了 <code>function onEnterFrame(e:Event):void { ... }</code> 后，它每帧执行；顶层代码只在开始时执行一次。未定义函数的旧脚本则整段每帧执行。</li>
+  <li><b>addEventListener 注册</b>：<code>stage.addEventListener(Event.ENTER_FRAME, myFunc)</code> 注册每帧函数；<code>KeyboardEvent.KEY_DOWN/KEY_UP</code> 注册键盘事件。</li>
+  <li><b>Key.isDown 轮询</b>：在 onEnterFrame 里查询按键状态。</li>
+</ol>
+<div class="note">推荐游戏用事件驱动：键盘用 <code>stage.addEventListener(KeyboardEvent.KEY_DOWN/KEY_UP, 函数)</code>，回调参数 e 为键码；每帧逻辑放在 <code>onEnterFrame</code> 里。</div>
+
+<h2 id="ops">运算符 / 关键字 / 注释</h2>
+<table>
+  <tr><th>类别</th><th>内容</th></tr>
+  <tr><td>算术</td><td><code>+ - * / %</code></td></tr>
+  <tr><td>比较</td><td><code>== === != &lt; &lt;= &gt; &gt;=</code></td></tr>
+  <tr><td>逻辑</td><td><code>&amp;&amp; || !</code></td></tr>
+  <tr><td>自增/赋值</td><td><code>i++ ++i i-- --i += -= *= /=</code></td></tr>
+  <tr><td>流程</td><td><code>if / else / for / while / break / continue / return</code></td></tr>
+  <tr><td>声明</td><td><code>var / function / new / null / true / false / import</code></td></tr>
+  <tr><td>注释</td><td><code>// 单行</code> 与 <code>/* 多行 */</code></td></tr>
+</table>
+<pre><code>// 单行注释
+/* 多行
+   注释 */
+for (var i = 0; i &lt; 3; i++) { enemies[i].x += 1; }</code></pre>
+
+<h2 id="stmt-extra">语句增强（switch / do-while / for-in / try）</h2>
+<p>SuperScript 支持以下控制语句：</p>
+<h3>switch / case / default</h3>
+<pre><code>switch (n) {
+    case 1: trace("一"); break;
+    case 2: trace("二"); break;
+    default: trace("其他");
+}</code></pre>
+<h3>do … while</h3>
+<pre><code>var i = 0;
+do { i = i + 1; } while (i &lt; 3);   // 至少执行一次</code></pre>
+<h3>for … in（遍历数组 / 字符串 / 对象）</h3>
+<pre><code>var arr = [10, 20, 30];
+var s = "";
+for (var k in arr) { s = s + arr[k] + ";"; }   // k 为下标</code></pre>
+<h3>try / catch / finally / throw</h3>
+<pre><code>try {
+    if (x &lt; 0) throw "负数";
+} catch (e) {
+    trace("捕获：" + e);
+} finally {
+    trace("结束");
+}</code></pre>
+
+<h2 id="op-extra">运算符增强（三元 / 严格 / typeof / is / as）</h2>
+<table>
+  <tr><th>运算符</th><th>说明</th><th>示例</th></tr>
+  <tr><td><code>cond ? a : b</code></td><td>三元条件（右结合）</td><td><code>var t = hp &gt; 0 ? "活" : "死";</code></td></tr>
+  <tr><td><code>=== / !==</code></td><td>严格相等 / 严格不等（比较值与类型）</td><td><code>if (n === 3) { ... }</code></td></tr>
+  <tr><td><code>typeof x</code></td><td>返回类型名字符串（number / string / boolean / object）</td><td><code>if (typeof x === "number") { ... }</code></td></tr>
+  <tr><td><code>delete arr[i]</code></td><td>删除数组元素 / 字符串字符</td><td><code>delete list[2];</code></td></tr>
+  <tr><td><code>a is Type</code></td><td>类型判断</td><td><code>if (o is Cube) { ... }</code></td></tr>
+  <tr><td><code>this</code></td><td>当前脚本上下文对象</td><td><code>this.x = 5;</code></td></tr>
+</table>
+
+<h2 id="fn-global2">全局函数（isNaN / parseInt / getTimer / setInterval）</h2>
+<table>
+  <tr><th>函数</th><th>说明</th></tr>
+  <tr><td><code>isNaN(x)</code> / <code>isFinite(x)</code></td><td>判断非数字 / 有限数</td></tr>
+  <tr><td><code>parseInt(str)</code> / <code>parseFloat(str)</code></td><td>字符串转整数 / 浮点数（parseInt 按十进制）</td></tr>
+  <tr><td><code>String.fromCharCode(65, 66)</code></td><td>字符码转字符串（返回 "AB"）</td></tr>
+  <tr><td><code>getTimer()</code></td><td>返回脚本启动以来的毫秒数</td></tr>
+  <tr><td><code>setInterval(函数名, 毫秒)</code> / <code>setTimeout(…)</code></td><td>周期 / 延时调用（<code>clearInterval / clearTimeout</code> 取消）</td></tr>
+  <tr><td><code>trace(...)</code> / <code>print(...)</code></td><td>输出到调试日志</td></tr>
+</table>
+
+<h2 id="m-arrstr">Array / String / Number 方法</h2>
+<h3>数组方法</h3>
+<table>
+  <tr><th>方法</th><th>说明</th></tr>
+  <tr><td><code>push / pop</code></td><td>尾部增删（push 返回新长度）</td></tr>
+  <tr><td><code>shift / unshift</code></td><td>头部删 / 增</td></tr>
+  <tr><td><code>splice(i, n, ...)</code></td><td>删除 / 替换一段</td></tr>
+  <tr><td><code>concat(other)</code></td><td>连接数组返回新数组</td></tr>
+  <tr><td><code>join(sep)</code></td><td>用分隔符连接成字符串</td></tr>
+  <tr><td><code>reverse() / sort()</code></td><td>反转 / 排序（原地）</td></tr>
+  <tr><td><code>indexOf / lastIndexOf</code></td><td>查找下标（无则 -1）</td></tr>
+  <tr><td><code>slice(a, b)</code> / <code>toString()</code></td><td>切片 / 转字符串</td></tr>
+</table>
+<h3>字符串方法</h3>
+<table>
+  <tr><th>方法</th><th>说明</th></tr>
+  <tr><td><code>charAt(i) / charCodeAt(i)</code></td><td>取字符 / 字符码</td></tr>
+  <tr><td><code>indexOf / lastIndexOf / slice / substring / substr</code></td><td>查找与截取</td></tr>
+  <tr><td><code>split(sep)</code></td><td>拆成数组</td></tr>
+  <tr><td><code>replace(a, b)</code></td><td>替换（首次匹配）</td></tr>
+  <tr><td><code>toUpperCase / toLowerCase / trim</code></td><td>大小写 / 去空白</td></tr>
+  <tr><td><code>length</code></td><td>字符串长度（属性）</td></tr>
+</table>
+<h3>数字方法</h3>
+<table>
+  <tr><th>方法</th><th>说明</th></tr>
+  <tr><td><code>toFixed(n)</code></td><td>保留 n 位小数（返回字符串）</td></tr>
+  <tr><td><code>toPrecision(n)</code></td><td>有效数字 n 位</td></tr>
+</table>
+<p>示例：<code>Math.PI.toFixed(2)</code> 返回 <code>"3.14"</code>；<code>Math.SQRT2.toFixed(1)</code> 返回 <code>"1.4"</code>。</p>
+
+<h2 id="prop-extra">增强属性（rotationX / scaleX / parent）</h2>
+<table>
+  <tr><th>属性</th><th>说明</th></tr>
+  <tr><td><code>rotationX / rotationY / rotationZ</code></td><td>绕 X / Y / Z 轴旋转（度），等价 <code>rx / ry / rz</code></td></tr>
+  <tr><td><code>scaleX / scaleY / scaleZ</code></td><td>各轴缩放，等价 <code>sx / sy / sz</code></td></tr>
+  <tr><td><code>parent</code></td><td>父元件（用于层级判断，如 <code>cube.parent == tank</code>）</td></tr>
+</table>
+<p>同时 <code>Math</code> 增加常量：<code>LN2 / LN10 / LOG2E / LOG10E / SQRT2 / SQRT1_2</code>；<code>Key</code> 支持全部字母键、数字键、功能键 <code>F1…F12</code> 与修饰键 <code>SHIFT / CTRL / ALT</code> 常量；<code>stage</code> 支持 <code>mouseX / mouseY / mouseDown</code> 与 <code>MouseEvent.MOUSE_DOWN / MOUSE_UP / MOUSE_MOVE</code> 事件（<code>stage.addEventListener(...)</code>）。</p>
+
+<h2 id="ex-keys">示例 — 键盘小游戏</h2>
+<p>场景放一个球命名 <code>player</code>，一个立方体命名 <code>target</code>。方向键/WASD 移动 player，碰到 target 得分，target 随机跳走。</p>
+<pre><code>var speed:Number = 0.3;
+var score:Number = 0;
+function onEnterFrame(e:Event):void {
+    if (Key.isDown(Key.LEFT)  || Key.isDown(Key.A)) player.x -= speed;
+    if (Key.isDown(Key.RIGHT) || Key.isDown(Key.D)) player.x += speed;
+    if (Key.isDown(Key.UP)    || Key.isDown(Key.W)) player.z -= speed;
+    if (Key.isDown(Key.DOWN)  || Key.isDown(Key.S)) player.z += speed;
+    player.ry += 2;
+    var dx:Number = player.x - target.x;
+    var dz:Number = player.z - target.z;
+    if (Math.abs(dx) &lt; 1 &amp;&amp; Math.abs(dz) &lt; 1) {
+        score += 1;
+        target.x = (Math.random() - 0.5) * 10;
+        target.z = (Math.random() - 0.5) * 10;
+        trace("score=" + score);
+    }
+}</code></pre>
+
+<h2 id="ex-tank">示例 — 坦克大战（完整脚本）</h2>
+<p>内置示例「坦克大战」的完整脚本（英文标识符、键盘事件驱动）。元件：<code>playerTank</code>（含 playerBody/playerTurret/playerGun/playerTrackL/playerTrackR）、<code>enemy1~3</code>、<code>bullet</code>、<code>enemyBullet</code>、<code>wall</code>、<code>obstacle1~4</code>、<code>ground</code>。</p>
+<pre><code>var score = 0;
+var hp = 100;
+var en1 = 1; var en2 = 1; var en3 = 1;
+var d1 = 1; var d2 = -1; var d3 = 1;
+var ba = 0; var bx = 0; var bz = 0; var bd = 0;
+var ea = 0; var ex = 0; var ez = 0; var ed = 0;
+var cd = 0; var cde = 0; var over = 0;
+var mv = 0; var tr = 0; var fk = 0;
+function onKeyDown(e) {
+    if (e == 65 || e == 37) tr = 1;
+    if (e == 68 || e == 39) tr = -1;
+    if (e == 87 || e == 38) mv = 1;
+    if (e == 83 || e == 40) mv = -1;
+    if (e == 32) fk = 1;
+}
+function onKeyUp(e) {
+    if (e == 65 || e == 37) { if (tr == 1) tr = 0; }
+    if (e == 68 || e == 39) { if (tr == -1) tr = 0; }
+    if (e == 87 || e == 38) { if (mv == 1) mv = 0; }
+    if (e == 83 || e == 40) { if (mv == -1) mv = 0; }
+    if (e == 32) fk = 0;
+}
+stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+function hitWall(x, z) {
+    if (Math.abs(x) &lt; 3.5 &amp;&amp; Math.abs(z) &lt; 3.5) return true;
+    if (Math.abs(x + 10) &lt; 1.5 &amp;&amp; Math.abs(z + 10) &lt; 1.5) return true;
+    if (Math.abs(x - 10) &lt; 1.5 &amp;&amp; Math.abs(z - 10) &lt; 1.5) return true;
+    if (Math.abs(x + 10) &lt; 1.5 &amp;&amp; Math.abs(z - 12) &lt; 1.5) return true;
+    if (Math.abs(x - 10) &lt; 1.5 &amp;&amp; Math.abs(z + 12) &lt; 1.5) return true;
+    return false;
+}
+function playerFire() {
+    ba = 1;
+    bd = playerTank.ry;
+    bx = playerTank.x - sin(bd) * 2.0;
+    bz = playerTank.z - cos(bd) * 2.0;
+    bullet.visible = true;
+    bullet.ry = bd;
+}
+function onEnterFrame(e:Event) {
+    if (over == 1) return;
+    if (tr == 1) playerTank.ry = playerTank.ry + 3;
+    if (tr == -1) playerTank.ry = playerTank.ry - 3;
+    var sp = 0.15;
+    var nx = playerTank.x;
+    var nz = playerTank.z;
+    if (mv == 1) { nx = playerTank.x - sin(playerTank.ry) * sp; nz = playerTank.z - cos(playerTank.ry) * sp; }
+    if (mv == -1) { nx = playerTank.x + sin(playerTank.ry) * sp; nz = playerTank.z + cos(playerTank.ry) * sp; }
+    if (!hitWall(nx, nz)) { playerTank.x = nx; playerTank.z = nz; }
+    if (playerTank.x &gt; 20) playerTank.x = 20;
+    if (playerTank.x &lt; -20) playerTank.x = -20;
+    if (playerTank.z &gt; 20) playerTank.z = 20;
+    if (playerTank.z &lt; -20) playerTank.z = -20;
+    cd = cd - 1; if (cd &lt; 0) cd = 0;
+    if (fk == 1 &amp;&amp; ba == 0 &amp;&amp; cd == 0) { playerFire(); cd = 14; }
+    if (ba == 1) {
+        bx = bx - sin(bd) * 0.55;
+        bz = bz - cos(bd) * 0.55;
+        bullet.x = bx; bullet.z = bz;
+        if (en1 == 1 &amp;&amp; Math.abs(bx - enemy1.x) &lt; 1.5 &amp;&amp; Math.abs(bz - enemy1.z) &lt; 1.5) { en1 = 0; enemy1.visible = false; enemy1Gun.visible = false; ba = 0; bullet.visible = false; score = score + 10; }
+        if (en2 == 1 &amp;&amp; Math.abs(bx - enemy2.x) &lt; 1.5 &amp;&amp; Math.abs(bz - enemy2.z) &lt; 1.5) { en2 = 0; enemy2.visible = false; enemy2Gun.visible = false; ba = 0; bullet.visible = false; score = score + 10; }
+        if (en3 == 1 &amp;&amp; Math.abs(bx - enemy3.x) &lt; 1.5 &amp;&amp; Math.abs(bz - enemy3.z) &lt; 1.5) { en3 = 0; enemy3.visible = false; enemy3Gun.visible = false; ba = 0; bullet.visible = false; score = score + 10; }
+        if (hitWall(bx, bz) || Math.abs(bx) &gt; 20 || Math.abs(bz) &gt; 20) { ba = 0; bullet.visible = false; }
+    }
+    if (en1 == 1) { enemy1.x = enemy1.x + 0.07 * d1; if (enemy1.x &gt; 15) d1 = -1; if (enemy1.x &lt; -15) d1 = 1; }
+    if (en2 == 1) { enemy2.x = enemy2.x + 0.06 * d2; if (enemy2.x &gt; 15) d2 = -1; if (enemy2.x &lt; -15) d2 = 1; }
+    if (en3 == 1) { enemy3.x = enemy3.x + 0.065 * d3; if (enemy3.x &gt; 15) d3 = -1; if (enemy3.x &lt; -15) d3 = 1; }
+    if (en1 == 1) { enemy1.ry = Math.atan2(enemy1.x - playerTank.x, enemy1.z - playerTank.z) * 180 / Math.PI; }
+    if (en2 == 1) { enemy2.ry = Math.atan2(enemy2.x - playerTank.x, enemy2.z - playerTank.z) * 180 / Math.PI; }
+    if (en3 == 1) { enemy3.ry = Math.atan2(enemy3.x - playerTank.x, enemy3.z - playerTank.z) * 180 / Math.PI; }
+    cde = cde - 1; if (cde &lt; 0) cde = 0;
+    if (ea == 0 &amp;&amp; cde == 0) {
+        if (en1 == 1) { ea = 1; ed = enemy1.ry; ex = enemy1.x - sin(ed) * 2.0; ez = enemy1.z - cos(ed) * 2.0; enemyBullet.visible = true; enemyBullet.ry = ed; cde = 40; }
+        else if (en2 == 1) { ea = 1; ed = enemy2.ry; ex = enemy2.x - sin(ed) * 2.0; ez = enemy2.z - cos(ed) * 2.0; enemyBullet.visible = true; enemyBullet.ry = ed; cde = 40; }
+        else if (en3 == 1) { ea = 1; ed = enemy3.ry; ex = enemy3.x - sin(ed) * 2.0; ez = enemy3.z - cos(ed) * 2.0; enemyBullet.visible = true; enemyBullet.ry = ed; cde = 40; }
+    }
+    if (ea == 1) {
+        ex = ex - sin(ed) * 0.5;
+        ez = ez - cos(ed) * 0.5;
+        enemyBullet.x = ex; enemyBullet.z = ez;
+        if (Math.abs(ex - playerTank.x) &lt; 1.5 &amp;&amp; Math.abs(ez - playerTank.z) &lt; 1.5) { ea = 0; enemyBullet.visible = false; hp = hp - 5; }
+        if (hitWall(ex, ez) || Math.abs(ex) &gt; 20 || Math.abs(ez) &gt; 20) { ea = 0; enemyBullet.visible = false; }
+    }
+    if (hp &lt;= 0) { over = 1; hudText = "Game Over! Score=" + score + " Click to restart"; }
+    else if (en1 == 0 &amp;&amp; en2 == 0 &amp;&amp; en3 == 0) { over = 1; hudText = "Victory! All enemies destroyed Score=" + score + " Click to restart"; }
+    else { hudText = "Tank Battle  HP=" + hp + "  Score=" + score + "   W/S move A/D turn Space fire"; }
+}</code></pre>
+
+<h2 id="compat">中文兼容写法</h2>
+<p>为方便从旧工程迁移，引擎仍兼容以下中文写法（新脚本建议统一使用英文）：</p>
+<table>
+  <tr><th>英文</th><th>中文别名</th><th>英文</th><th>中文别名</th></tr>
+  <tr><td>var</td><td>定义</td><td>if</td><td>如果</td></tr>
+  <tr><td>else</td><td>否则</td><td>for</td><td>循环</td></tr>
+  <tr><td>while</td><td>当</td><td>break</td><td>跳出</td></tr>
+  <tr><td>continue</td><td>继续</td><td>function</td><td>函数</td></tr>
+  <tr><td>return</td><td>返回</td><td>new</td><td>新建</td></tr>
+  <tr><td>true / false</td><td>真 / 假</td><td>frame</td><td>帧</td></tr>
+  <tr><td>print / trace</td><td>输出</td><td>sin / cos / tan</td><td>正弦 / 余弦 / 正切</td></tr>
+  <tr><td>sqrt</td><td>开方</td><td>abs</td><td>绝对值</td></tr>
+  <tr><td>min / max</td><td>最小 / 最大</td><td>random</td><td>随机</td></tr>
+  <tr><td>play / stop</td><td>播放 / 停止</td><td>gotoFrame</td><td>跳到帧</td></tr>
+  <tr><td>segments</td><td>细分</td><td>new Sphere/Ball</td><td>new 球</td></tr>
+</table>
+
+</main>
+</div>
+</body>
+</html>

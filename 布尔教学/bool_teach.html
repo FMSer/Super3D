@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>三种布尔运算教学——圆柱 × 方管</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Microsoft YaHei", sans-serif; background: #f5f6fa; color: #222; padding: 18px; }
+h1 { font-size: 24px; margin-bottom: 4px; }
+.sub { color: #666; font-size: 14px; margin-bottom: 18px; }
+.sec { font-size: 17px; font-weight: bold; margin: 18px 0 8px; color: #333; }
+.cards { display: flex; flex-wrap: wrap; gap: 12px; }
+.card { background: #fff; border-radius: 10px; padding: 12px 14px; width: 300px; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+.card h3 { font-size: 15px; margin-bottom: 8px; }
+.card svg { display: block; margin: 0 auto; }
+.formula { font-family: Consolas, monospace; font-size: 13px; background: #f0f4ff; border-radius: 6px; padding: 6px 8px; margin: 8px 0; line-height: 1.5; }
+.desc { font-size: 13px; line-height: 1.7; color: #444; }
+.frame-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.frame-box { background: #fff; border-radius: 10px; padding: 10px; width: 420px; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+.frame-box h3 { font-size: 14px; margin-bottom: 6px; }
+.frame-box iframe { width: 100%; height: 300px; border: 1px solid #ddd; border-radius: 6px; }
+.note { font-size: 13px; color: #555; background: #fff8e1; border-left: 4px solid #f9a825; border-radius: 6px; padding: 10px 12px; margin-top: 14px; line-height: 1.8; }
+table { border-collapse: collapse; background: #fff; width: 100%; max-width: 860px; font-size: 13px; }
+th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; }
+th { background: #eef2ff; }
+</style>
+</head>
+<body>
+<h1>三种布尔运算（数学讲解）</h1>
+<div class="sub">圆柱（A）与方管（B）—— 集合论视角：对一个三维空间里的点 p，三种运算就是三种"归属规则"。方管按<b>空心管壳</b>参与并集/交集（交集=管壁框架）；差集按方管外形整体挖孔。</div>
+
+<div class="sec">一、集合定义与截面示意（俯视）</div>
+<div class="cards">
+
+<div class="card">
+  <h3>① 原始：圆柱 + 方管（空心）</h3>
+  <svg viewBox="0 0 200 200" width="200" height="200">
+    <circle cx="100" cy="100" r="62" fill="rgba(76,175,80,0.25)" stroke="#2e7d32" stroke-width="2"/><rect x="69" y="69" width="62" height="62" fill="rgba(156,39,176,0.45)" stroke="#7b1fa2" stroke-width="2"/><rect x="81" y="81" width="38" height="38" fill="#ffffff" stroke="none"/>
+  </svg>
+  <div class="formula">A、B 两个元件叠放<br/>绿色=圆柱 A　紫色=方管 B（管腔中空）</div>
+  <div class="desc">两个元件各自独立存在，执行布尔前先选中它们。</div>
+</div>
+<div class="card">
+  <h3>② 并集 A∪B</h3>
+  <svg viewBox="0 0 200 200" width="200" height="200">
+    <circle cx="100" cy="100" r="62" fill="rgba(76,175,80,0.55)" stroke="#2e7d32" stroke-width="2"/><rect x="69" y="69" width="62" height="62" fill="rgba(76,175,80,0.65)" stroke="#1b5e20" stroke-width="2"/><rect x="81" y="81" width="38" height="38" fill="#ffffff" stroke="none"/>
+  </svg>
+  <div class="formula">A∪B = { p │ p∈A 或 p∈B }</div>
+  <div class="desc">两个体合为一个整体：圆柱保留，空心管也保留（伸出部分为管壁、管腔中空）。<br/><b>贯穿时效果</b>：圆柱 + 伸出圆柱外的空心管段。</div>
+</div>
+<div class="card">
+  <h3>③ 交集 A∩B</h3>
+  <svg viewBox="0 0 200 200" width="200" height="200">
+    <circle cx="100" cy="100" r="62" fill="rgba(76,175,80,0.15)" stroke="#2e7d32" stroke-width="2"/><rect x="69" y="69" width="62" height="62" fill="rgba(255,152,0,0.75)" stroke="#e65100" stroke-width="2"/><rect x="81" y="81" width="38" height="38" fill="#ffffff" stroke="none"/>
+  </svg>
+  <div class="formula">A∩B = { p │ p∈A 且 p∈B }</div>
+  <div class="desc">只保留两个体重叠的部分：空心管的管壁在圆柱体内的那一段，管腔中空。<br/><b>贯穿时效果</b>：一个空心方管框架（不是实心块）。</div>
+</div>
+<div class="card">
+  <h3>④ 差集 A−B（挖孔）</h3>
+  <svg viewBox="0 0 200 200" width="200" height="200">
+    <circle cx="100" cy="100" r="62" fill="rgba(76,175,80,0.55)" stroke="#2e7d32" stroke-width="2"/><rect x="69" y="69" width="62" height="62" fill="#ffffff" stroke="#c62828" stroke-width="2"/><rect x="69" y="69" width="62" height="62" fill="none" stroke="#c62828" stroke-width="2"/>
+  </svg>
+  <div class="formula">A−B = { p │ p∈A 且 p∉B }</div>
+  <div class="desc">圆柱减去方管覆盖的空间：圆柱上挖出贯穿方孔（软件按方管外形整体挖孔，方管删除）。<br/><b>贯穿时效果</b>：圆柱带贯穿方孔——这就是您之前验收的"中空"效果。</div>
+</div>
+</div>
+
+<div class="sec">二、3D 实际效果（可拖动旋转查看）</div>
+<div class="frame-row">
+<div class="frame-box"><h3>① 原始叠加（圆柱 A + 方管 B 贯穿）</h3><iframe src="bool_orig.html"></iframe></div>
+<div class="frame-box"><h3>② 并集 A∪B：圆柱 + 空心管伸出段（管腔中空）</h3><iframe src="bool_union.html"></iframe></div>
+<div class="frame-box"><h3>③ 交集 A∩B：只留管壁框架（空心）</h3><iframe src="bool_inter.html"></iframe></div>
+<div class="frame-box"><h3>④ 差集 A−B：圆柱挖方孔，方管消失</h3><iframe src="bool_diff.html"></iframe></div>
+</div>
+
+<div class="sec">三、三种运算对照表（贯穿场景）</div>
+<table>
+<tr><th>运算</th><th>数学定义</th><th>圆柱保留？</th><th>方管保留？</th><th>最终形状</th></tr>
+<tr><td>并集 A∪B</td><td>属于 A 或属于 B 的点</td><td>是（管腔处也保留）</td><td>是（空心管壳伸出段）</td><td>圆柱 + 伸出圆柱外的空心管段</td></tr>
+<tr><td>交集 A∩B</td><td>同时属于 A 和 B 的点</td><td>否（只留管壁重叠带）</td><td>否（管壁在圆柱内段）</td><td>空心管壁框架（管腔中空）</td></tr>
+<tr><td>差集 A−B</td><td>属于 A 但不属于 B 的点</td><td>是（挖出贯穿方孔）</td><td>删除</td><td>中空的圆柱（带方孔）</td></tr>
+</table>
+
+<div class="note"><b>对应您遇到的问题</b>：上次"贯穿时方管余在圆柱体外的部分还在"，正是<b>并集</b>（A∪B）的形态——管与圆柱合体，管伸出部分自然保留。<br/>
+若您要的是"圆柱挖孔、方管消失"，应使用<b>差集 A−B</b>；若只要"管穿过圆柱的那一段"，应使用<b>交集 A∩B</b>。<br/>
+三种运算已全部加入编辑器右键菜单：<b>布尔差集(A−B挖孔)</b>、<b>布尔并集(A∪B合并)</b>、<b>布尔交集(A∩B共体)</b>。</div>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+﻿# Super3D Project v1
+camera yaw=-45.000000 pitch=30.000000 dist=20.000000 tx=0.000000 ty=0.000000 tz=0.000000
+fps=24
+frames=120
+loop=1
+script_per_frame=1
+obj name=ground type=6 parent= visible=1 color=0.700000,0.800000,0.950000 params=20.000000,0.000000,0.000000,0.000000 seg=1 tf=0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.000000,1.000000,1.000000
+obj name=ball type=2 parent= visible=1 color=1.000000,0.550000,0.200000 params=1.000000,0.000000,0.000000,0.000000 seg=24 tf=0.000000,1.000000,0.000000,0.000000,0.000000,0.000000,1.000000,1.000000,1.000000
+script_len=88
+print("Ball bouncing!");
+ball.y = 1 + 4 * abs(sin(frame * 8));
+ball.ry = frame * 10;
+# end
