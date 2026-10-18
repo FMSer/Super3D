@@ -1,0 +1,4 @@
+// Super3DPlayer 资源脚本
+#define IDR_MAINFRAME 128
+
+IDR_MAINFRAME               ICON                    "Super3D.ico"

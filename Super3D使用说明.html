@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super3D 使用说明 — 3D 场景设计软件</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Microsoft YaHei","Segoe UI",sans-serif; background:#f4f6f9; color:#222; }
+  header { background:#1b3a5c; color:#fff; padding:18px 28px; }
+  header h1 { font-size:22px; font-weight:600; }
+  header p { font-size:13px; opacity:.8; margin-top:4px; }
+  .wrap { display:flex; min-height:calc(100vh - 76px); }
+  nav { width:260px; background:#fff; border-right:1px solid #dde3ea; padding:14px 0; overflow:auto; position:sticky; top:0; height:calc(100vh - 76px); }
+  nav a { display:block; padding:7px 22px; color:#34506b; text-decoration:none; font-size:13.5px; border-left:3px solid transparent; }
+  nav a:hover { background:#eef3f8; }
+  nav a.sel { background:#e3edf6; border-left-color:#1b3a5c; font-weight:600; }
+  nav .grp { padding:10px 22px 4px; font-size:11.5px; color:#8a9bb0; text-transform:uppercase; letter-spacing:1px; }
+  main { flex:1; padding:28px 40px 80px; max-width:960px; }
+  h2 { font-size:20px; color:#1b3a5c; border-bottom:2px solid #1b3a5c; padding-bottom:6px; margin:34px 0 14px; }
+  h2:first-child { margin-top:0; }
+  h3 { font-size:16px; color:#2c5a8c; margin:24px 0 8px; }
+  p, li { font-size:14px; line-height:1.75; }
+  ul, ol { padding-left:22px; margin:8px 0; }
+  code { font-family:Consolas,"Courier New",monospace; background:#eef1f5; border:1px solid #dde3ea; border-radius:3px; padding:1px 5px; font-size:13px; color:#a33327; }
+  pre { background:#16222e; color:#e6edf3; border-radius:6px; padding:14px 16px; margin:10px 0; overflow:auto; font-size:13px; line-height:1.6; }
+  pre code { background:none; border:none; color:inherit; padding:0; }
+  .note { background:#fff8e6; border:1px solid #f0dc9a; border-radius:4px; padding:8px 14px; font-size:13px; margin:10px 0; color:#6b5200; }
+  table { border-collapse:collapse; width:100%; margin:10px 0; font-size:13.5px; }
+  th, td { border:1px solid #d5dde5; padding:6px 10px; text-align:left; }
+  th { background:#eef2f7; color:#1b3a5c; }
+  .cmd { background:#e8f0fa; border-left:4px solid #1b3a5c; padding:8px 14px; font-family:Consolas,"Courier New",monospace; font-size:13px; color:#16304d; margin:10px 0; border-radius:0 4px 4px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Super3D 使用说明</h1>
+  <p>3D 场景设计软件（MFC + OpenGL）— 简单易用的 3D 场景设计工具：鼠标摆放图元、时间轴关键帧动画、脚本控制元件</p>
+</header>
+<div class="wrap">
+<nav>
+  <div class="grp">入门</div>
+  <a href="#overview">简介与功能</a>
+  <a href="#build">运行与构建</a>
+  <a href="#player">独立播放器</a>
+  <a href="#pack">一键打包</a>
+  <div class="grp">操作</div>
+  <a href="#features">功能一览</a>
+  <a href="#ui">界面操作速览</a>
+  <a href="#animate">做动画三步</a>
+  <div class="grp">脚本</div>
+  <a href="#docclass">文档类脚本工作流</a>
+  <a href="#editor">.ss 代码编辑器</a>
+  <a href="#script-ref">脚本参考</a>
+  <a href="#mcp">内置 MCP 服务器</a>
+  <div class="grp">参考</div>
+  <a href="#examples">内置示例</a>
+  <a href="#files">工程文件说明</a>
+  <a href="#known">已知说明</a>
+  <a href="#license">License</a>
+</nav>
+<main>
+
+<h2 id="overview">简介与功能</h2>
+<p>Super3D 是一个简单易用的 3D 场景设计工具：用鼠标摆放立方体、球、圆柱、圆锥、圆环、平面，在时间轴上插入关键帧做动画，再用脚本来控制元件动起来。全部中文界面、中文脚本关键字。</p>
+<p>SuperScript 是一种轻量级脚本语言——支持变量、函数、数组、事件与数学运算；还提供文档类（Document Class，.ss）语法，让整个工程可以像 Flash 一样用 <code>package / import / class / extends</code> 组织代码。</p>
+<h3>功能特性</h3>
+<ul>
+  <li><b>3D 场景编辑</b>——6 类基本体 + 分组；场景树（可重命名、点选、拖拽进组）；属性面板直接改位置/旋转/缩放/颜色/尺寸/细分；视口支持左键点选与拖拽（移动/旋转/缩放工具）、右键环绕、Shift+左键或“平移视角”工具平移、滚轮缩放、方向键微调。</li>
+  <li><b>元件工作流</b>——选中元件点【组】→ 包成可复用“元件”；<b>场景树里按住元件拖到组上放开</b> → 加入已有组（位置不变）；选中组再添加图元 → 编辑元件内部；选中组点【复制】→ 生成实例副本；点【打散】→ 组内元件散开且位置不变。组可无限嵌套。</li>
+  <li><b>时间轴关键帧动画</b>——底部时间轴标尺，拖动播放头到某帧 → 调整元件（自动记录关键帧）；两帧之间自动平滑补间；支持循环播放、删除关键帧（时间轴上右键菱形）。</li>
+  <li><b>关键帧脚本（帧动作）</b>——时间轴关键帧（含空白关键帧）右键 →【编辑此关键帧脚本…】挂独立脚本，播放进入该帧时执行一次；也可以【脚本 → 关键帧脚本】打开当前选中关键帧的脚本编辑。带橙色小三角的关键帧表示挂有脚本。</li>
+  <li><b>文档类脚本（Document Class，.ss）</b>——整个工程一个 <code>工程名.ss</code> 文档类（与 .s3d 同名同目录），<code>package / import / class / extends</code> 语法，构造函数播放开始时执行一次，<code>onEnterFrame</code> 每帧驱动、键盘事件全程生效，是控制整个程序运行周期的首选脚本入口。</li>
+  <li><b>代码编辑器（.ss）</b>——语法高亮（关键字蓝/类型紫/注释绿/字符串暗红/数字蓝）、回车自动缩进、Ctrl+F 格式化、Ctrl+A/C/V/X/Z 复制粘贴全选、Ctrl+S 直接覆盖保存（已保存过不弹对话框，首次另存为）、右键菜单、<b>代码自动补全</b>。</li>
+  <li><b>脚本控制（SuperScript 语言）</b>——<code>元件名.属性 = 值</code>，支持变量、函数、数组、if/else、for/while、switch、try/catch、常用数学函数、播放控制函数与事件驱动（<code>stage.addEventListener(Event.ENTER_FRAME, ...)</code> / 键盘事件）；中英文关键字都可写。</li>
+  <li><b>内置示例</b>——六个英文示例（House 小房子 / Windmill 风车 / SolarSystem 太阳系 / BounceBall 弹跳球 / DocClass 文档类演示 / TankBattle 坦克大战），在【示例】菜单加载。</li>
+  <li><b>工程存取</b>——<code>.s3d</code> 文本工程文件（UTF-8+BOM），可保存/打开；30 步撤销（Ctrl+Z）。保存工程时同名 .ss 文档类同时落盘。</li>
+  <li><b>一键调试发布</b>——点【调试】→ 把当前作品（无需先保存）一键打包成独立 exe 并自动运行，效果与正式发布完全一致；调试 exe 生成在编辑器所在目录，同目录旧调试文件会自动清理。</li>
+  <li><b>导出给 Three.js</b>——点【导出】→ 生成一个 HTML 网页；浏览器打开就能查看、旋转、播放模型（元件层级、几何参数、颜色、关键帧动画都会导出；逐帧脚本是 Super3D 专用语言，不会导出）。<b>完全离线</b>：网页已内嵌 Three.js 库（three.min.js / OrbitControls.js），断网也能打开。也可命令行无人值守导出：<code>Super3D.exe /exporthtml &lt;输出.html&gt; [输入.s3d]</code>。</li>
+  <li><b>独立播放器</b>——把 <code>.s3d</code> 拖到 Super3DPlayer.exe 上即可脱离编辑器播放；一键打包可生成自运行 exe。</li>
+</ul>
+
+<h2 id="build">运行与构建（支持 VS2019）</h2>
+<p>本机验证环境：Visual Studio 2019 Enterprise（MSVC 14.29），Windows 10/11，x86 与 x64 均可构建。</p>
+<ul>
+  <li>用 Visual Studio 2019 打开 <code>Super3D.sln</code>，选择 <code>Debug|Win32</code> / <code>Release|Win32</code> / <code>Debug|x64</code> / <code>Release|x64</code> 直接编译运行。</li>
+  <li>命令行构建示例：</li>
+</ul>
+<pre><code>"D:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" Super3D.sln /p:Configuration=Release /p:Platform=Win32</code></pre>
+<ul>
+  <li>产物位置：<code>Win32\Debug\Super3D.exe</code>、<code>Win32\Release\Super3D.exe</code>、<code>x64\Debug\</code>、<code>x64\Release\</code>。</li>
+  <li>依赖：仅 Windows 系统自带 <code>opengl32.lib / glu32.lib</code> 与 MFC 动态库，零第三方依赖。</li>
+</ul>
+
+<h2 id="player">独立播放器 Super3DPlayer（类似 swf 脱离编辑器运行）</h2>
+<p>把 <code>.s3d</code> 工程文件<b>直接拖到 <code>Player\Win32\Release\Super3DPlayer.exe</code>（或 x64 版）上放开</b>，或启动后在播放器里点【打开...】选择工程 → 自动从头播放动画 + 逐帧脚本，可随时【暂停】【重播】【重置视角】。左键拖动转视角、右键拖动平移、滚轮缩放。播放器没有编辑界面，适合发给别人直接看作品。</p>
+<ul>
+  <li>构建播放器：<code>MSBuild Player\Super3DPlayer.vcxproj /p:Configuration=Release /p:Platform=Win32</code>（同理 x64）。</li>
+  <li>产物：<code>Player\Win32\Release\Super3DPlayer.exe</code>、<code>Player\x64\Release\Super3DPlayer.exe</code>。</li>
+  <li>与编辑器共用同一套场景/渲染/脚本引擎，行为完全一致。</li>
+</ul>
+<div class="note">播放器窗口底部状态栏常驻显示操作提示：“左键拖动：转动视角  右键拖动：平移  滚轮：缩放”。</div>
+
+<h2 id="pack">一键打包（把作品发布成独立 exe）</h2>
+<p>在播放器里打开作品后点【打包】，选择保存位置 → 生成一个<b>独立自运行的 <code>作品.exe</code></b>：</p>
+<ul>
+  <li>双击即自动播放动画 + 逐帧脚本，无需播放器、无需 .s3d 文件，发给任何人都能看；</li>
+  <li>打包出的 exe 界面只保留 播放/暂停/重播/重置视角/退出（没有编辑按钮）；</li>
+  <li>实现方式：把 .s3d 内容内嵌进播放器程序末尾（标记 <code>SUPER3DPACK1</code>），运行时自动识别并加载；</li>
+  <li>对同一个 exe 再次打包会先剥离旧数据再写入，不会越打越大。</li>
+</ul>
+<div class="note">说明：目录中另保留 <code>Super3D_VS2008.sln/.vcproj</code> 与根目录 <code>Debug/、Release/</code> 下的旧 VS2008 产物，仅作参考，正式使用以 VS2019 构建为准。打开旧工程若提示工具集缺失，请忽略。</div>
+
+<h2 id="features">功能一览</h2>
+<ul>
+  <li><b>3D 场景编辑</b>：6 类基本体 + 分组；场景树（可重命名、点选、拖拽进组）；属性面板直接改位置/旋转/缩放/颜色/尺寸/细分；视口支持左键点选与拖拽（移动/旋转/缩放工具）、右键环绕、Shift+左键或“平移视角”工具平移、滚轮缩放、方向键微调。</li>
+  <li><b>多选对齐（世界坐标）</b>：Ctrl+单击 多选多个元件，点菜单【对齐】→ 选 X/Y/Z 轴 → 起始边/中心/终止边对齐 或 平均分布。对齐以<b>第一个选中</b>的元件为基准（基准不动），只移动所选轴、其余两轴不变，物体不会堆叠；平均分布沿所选轴保持首尾元件不动、中间按<b>等空隙</b>重排。</li>
+  <li><b>元件工作流</b>：选中元件点【组】→ 包成可复用“元件”；<b>场景树里按住元件拖到组上放开</b> → 加入已有组（位置不变）；选中组再添加图元 → 编辑元件内部；选中组点【复制】→ 生成实例副本；点【打散】→ 组内元件散开且位置不变。组可无限嵌套。</li>
+  <li><b>时间轴动画</b>：底部时间轴标尺，拖动播放头到某帧 → 调整元件（自动记录关键帧）；两帧之间自动平滑补间；支持循环播放、删除关键帧（时间轴上右键菱形）。</li>
+  <li><b>关键帧脚本（帧动作）</b>：时间轴关键帧（含空白关键帧）右键 →【编辑此关键帧脚本…】挂独立脚本，播放进入该帧时执行一次；也可以【脚本 → 关键帧脚本】打开当前选中关键帧的脚本编辑。带橙色小三角的关键帧表示挂有脚本。</li>
+  <li><b>文档类脚本（Document Class，.ss）</b>：整个工程一个 <code>工程名.ss</code> 文档类（与 .s3d 同名同目录），<code>package / import / class / extends</code> 语法，构造函数播放开始时执行一次，<code>onEnterFrame</code> 每帧驱动、键盘事件全程生效，是控制整个程序运行周期的首选脚本入口。<b>import 规则</b>：包内类必须显式 import——<code>Object3D</code>(super3d.display.Object3D)、<code>Event</code>(super3d.events.Event)、<code>KeyboardEvent</code>(super3d.events.KeyboardEvent)、<code>Key</code>(super3d.input.Key)；顶层类（Number/String/Boolean/int/uint/Array/Object/Function/Math/void）与全局对象（stage/trace）免 import；支持通配符导入：<code>super3d.events.*</code> / <code>super3d.display.*</code> / <code>super3d.input.*</code> / <code>super3d.*</code> / <code>Math.*</code>。</li>
+  <li><b>代码编辑器（.ss）</b>：语法高亮（关键字蓝/类型紫/注释绿/字符串暗红/数字蓝）、回车自动缩进、Ctrl+F 格式化、Ctrl+A/C/V/X/Z 复制粘贴全选、<b>Ctrl+S 直接覆盖保存</b>（已保存过不弹对话框，首次另存为）、右键菜单、<b>代码自动补全</b>（输入 <code>元件名.</code> 弹出该元件属性列表，输入 <code>super3d.</code> / <code>super3d.events.</code> 等弹出包路径与类，输入 <code>Math.</code> / <code>Event.</code> / <code>KeyboardEvent.</code> / <code>Key.</code> / <code>stage.</code> 弹出静态成员与事件，↑↓ 选择回车插入）。</li>
+  <li><b>脚本控制（SuperScript 语言）</b>：<code>元件名.属性 = 值</code>，支持变量、函数、数组、if/else、for/while、switch、try/catch、常用数学函数、播放控制函数与事件驱动（<code>stage.addEventListener(Event.ENTER_FRAME, ...)</code> / 键盘事件）；中英文关键字都可写。</li>
+  <li><b>内置示例</b>：六个英文示例——<code>House</code>（小房子）、<code>Windmill</code>（风车）、<code>SolarSystem</code>（太阳系）、<code>BounceBall</code>（弹跳球）、<code>DocClass</code>（文档类演示）、<code>TankBattle</code>（坦克大战），在【示例】菜单加载（每个示例一个独立文件夹，含同名 .s3d 与 .ss）。</li>
+  <li><b>工程存取</b>：<code>.s3d</code> 文本工程文件（UTF-8+BOM），可保存/打开；30 步撤销（Ctrl+Z）。<b>保存工程时同名 .ss 文档类同时落盘</b>。</li>
+  <li><b>一键调试发布</b>：点【调试】→ 把当前作品（无需先保存）一键打包成独立 exe 并自动运行，效果与正式发布完全一致；调试 exe 生成在编辑器所在目录（如 <code>Win32\Debug\Super3D调试_时间戳.exe</code>），同目录旧调试文件会自动清理。</li>
+  <li><b>导出给 Three.js（像 Blender 一样）</b>：点【导出】→ 选保存位置，生成一个 HTML 网页；浏览器打开就能查看、旋转、播放模型（元件层级、几何参数、颜色、关键帧动画都会导出；逐帧脚本是 Super3D 专用语言，不会导出）。<b>完全离线</b>：网页已内嵌 Three.js 库（three.min.js / OrbitControls.js），断网也能打开；这两个库文件需随工程放在一起（工程根目录或编辑器 exe 同目录）。也可命令行无人值守导出：<code>Super3D.exe /exporthtml &lt;输出.html&gt; [输入.s3d]</code>。</li>
+</ul>
+
+<h2 id="ui">界面操作速览</h2>
+<pre><code>工具栏第1行：新建  打开  保存  撤销  选择  移动  旋转  缩放  平移视角  复制  删除  插关键帧  删关键帧  播放  停止  重置视角
+工具栏第2行：组  立方体  球  圆柱  圆锥  圆环  平面  示例(House/Windmill/SolarSystem/BounceBall/DocClass/TankBattle)  运行脚本  调试  导出  帮助
+左侧：场景树（上） + 属性面板（下）        中间：3D 视口
+底部：文档Tab(.s3d | .ss) → 时间轴 Tab + 输出 Tab + 编译器错误 Tab（组合面板）
+菜单【文件】→ 新建/打开/保存（Ctrl+S 直接覆盖）/另存为/导出；菜单【对齐】→ X/Y/Z 轴（起始边/中心/终止边对齐 + 平均分布）；菜单【控制】→ 播放/停止/调试；菜单【脚本】→ 文档类/关键帧脚本/运行脚本</code></pre>
+<p>鼠标：左键点选/拖拽；右键拖动旋转视角；滚轮缩放；Shift+左键拖动（或“平移视角”工具）平移画面。<br>
+快捷键：方向键/PageUp/PageDown 微调；Delete 删除；Ctrl+Z 撤销；Ctrl+D 复制；Ctrl+S/O/N 保存/打开/新建；在 .ss 文档类编辑页：Ctrl+A/C/V/X/Z 全选/复制/粘贴/剪切/撤销，Ctrl+F 格式化代码，回车自动缩进。</p>
+
+<h2 id="animate">做动画三步（移动/旋转元件时会自动记录关键帧）</h2>
+<ol>
+  <li>选中元件，把时间轴红色播放头拖到某一帧；</li>
+  <li>用移动/旋转工具摆好位置（自动记录关键帧）；</li>
+  <li>把播放头拖到另一帧再改一次，点【播放】——元件自动补间运动。</li>
+</ol>
+<p>不需要自动记录时，可在时间轴上右键菱形删除关键帧。</p>
+
+<h2 id="docclass">文档类脚本（.ss）工作流</h2>
+<p>文档类是“整个工程的脚本”：它影响整个程序运行的整个周期，并不只是播放开始时执行一次。</p>
+<ul>
+  <li>每个工程一个文档类文件：<b>与 .s3d 同名、同目录</b>，如 <code>我的作品.s3d</code> 对应 <code>我的作品.ss</code>。保存 .s3d 时同名 .ss 同时保存。</li>
+  <li>新建文档类时自动填入标准模板（基类 <code>super3d.display.Object3D</code>，并自动 import 所需事件类）：</li>
+</ul>
+<pre><code>package {
+	import super3d.display.Object3D;
+	import super3d.events.Event;
+	public class main extends Object3D {
+		public function main() {
+		    stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
+		}
+		public function onEnterFrame(e:Event):void {
+			
+		}
+	}
+}</code></pre>
+<ul>
+  <li>打开方式：菜单【脚本 → 文档类】，或点击文档 Tab 的 <code>.ss</code> 标签；点 <code>.ss</code> 标签上的 × 可关闭（磁盘 .ss 文件保留，可重新打开）。</li>
+  <li>文档类里的其他函数被事件驱动或直接调用后才执行（如 <code>onEnterFrame</code> 每帧、<code>onKeyDown/onKeyUp</code> 按键事件、<code>main()</code> 构造一次）。</li>
+  <li>在文档类中加入 <code>stop()</code> 时：时间轴停止播放，但文档类相关代码与帧代码照常执行。</li>
+  <li>播放/调试时文档类中的 <code>trace()/print()</code> 输出显示在底部【输出】面板；脚本语法或运行错误显示在【编译器错误】面板并弹窗提示（含第几层第几帧与错误信息）。</li>
+</ul>
+
+<h2 id="editor">.ss 文档类编辑器（代码编辑体验）</h2>
+<ul>
+  <li><b>语法高亮</b>：关键字蓝、类型紫、注释绿、字符串暗红、数字蓝。</li>
+  <li><b>自动补全</b>：输入 <code>元件名.</code>（如 <code>mc.</code>）后弹出该元件支持的属性候选（<code>x y z rx ry rz rotation rotationX/Y/Z sx sy sz s scaleX/Y/Z visible name parent type segments red green blue</code>）；输入 <code>super3d.</code> 弹出 <code>display/events/input</code> 包路径，<code>super3d.events.</code> 弹出 <code>Event/KeyboardEvent</code>，<code>super3d.display.</code> 弹出 <code>Object3D</code>，<code>super3d.input.</code> 弹出 <code>Key</code>；输入 <code>Math.</code> / <code>Event.</code> / <code>KeyboardEvent.</code> / <code>Key.</code> / <code>stage.</code> 弹出对应静态成员与事件；↑↓ 选择、Enter/Tab 插入、Esc 关闭、双击插入；继续输入可过滤候选。</li>
+  <li><b>回车自动缩进</b>：回车后自动继承上一行缩进；行尾 <code>{</code> 加一级；行首 <code>}</code> 减一级。</li>
+  <li><b>格式化代码</b>：Ctrl+Shift+F 或右键【格式化代码】——按代码缩进规范重排（<code>package/class/function</code> 同级缩进、<code>{ }</code> 逐级缩进）。</li>
+  <li><b>保存</b>：Ctrl+A 全选、Ctrl+C/V/X 复制/粘贴/剪切、Ctrl+Z 撤销、<b>Ctrl+S 保存（已保存过直接覆盖原文件，首次弹“另存为”选择位置）</b>。</li>
+  <li><b>右键菜单</b>：撤销 / 剪切 / 复制 / 粘贴 / 全选 / 格式化代码。</li>
+  <li><b>Tab 悬停提示</b>：鼠标移到 <code>.s3d</code> / <code>.ss</code> 标签上显示完整文件路径。</li>
+</ul>
+
+<h2 id="script-ref">脚本参考</h2>
+<pre><code>var a = 1;                      定义（var）/ 定义 a = 1;
+如果 x > 5 { } 否则 { }         if / else
+循环 i = 0; i < 10; i++ { }     for / while；跳出 break；真/假 true/false</code></pre>
+<ul>
+  <li><b>属性（可读写）</b>：<code>x y z</code>（位置）、<code>rx ry rz</code>（旋转度）、<code>sx sy sz</code>（缩放）、<code>s</code>（整体缩放）、<code>rotationX/Y/Z</code>（等价 rx/ry/rz）、<code>scaleX/Y/Z</code>（等价 sx/sy/sz）、<code>visible</code>（可见）、<code>red green blue</code>（颜色 0~255）、<code>name</code>、<code>parent</code>、<code>type</code>、<code>segments</code>、<code>frame</code>（当前帧）、<code>fps</code>（帧率）。</li>
+  <li><b>写属性逐帧动画</b>：在文档类 <code>onEnterFrame</code> 里或勾选“播放时每帧运行”的脚本中，写 <code>x/y/z/rx/ry/rz/sx/sy/sz/...</code> 立即生效；未勾选时点击【运行脚本】只执行一次。</li>
+  <li><b>函数</b>：<code>输出() 正弦() 余弦() 正切() 开方() 绝对值() 最小() 最大() 随机() 播放() 停止() 跳到帧()</code>，英文别名 <code>print trace sin cos tan sqrt abs min max random play stop gotoFrame</code>。</li>
+  <li><b>事件驱动（推荐）</b>：<code>stage.addEventListener(Event.ENTER_FRAME, 函数)</code> 每帧执行；<code>stage.addEventListener(KeyboardEvent.KEY_DOWN/KEY_UP, 函数)</code> 键盘事件（回调参数 e 为键码）；<code>Key.isDown(Key.LEFT)</code> 轮询按键。</li>
+  <li><b>易用语法</b>：<code>如果/循环/当</code> 的括号可省略（<code>如果 球.y &gt; 5 { }</code>）；变量可直接赋值（<code>i = 0</code> 自动创建变量）；支持 <code>i++ / i--</code> 自增自减；字符串与数字可拼接（<code>输出("位置=" + 球.x)</code>）。</li>
+  <li>常用示例：</li>
+</ul>
+<pre><code>球.x += 1;            // 每帧向右移动 1
+风车.ry = 帧 * 3;     // 每帧旋转 3 度
+地球.x = 10 * 余弦(帧 * 2);  地球.z = 10 * 正弦(帧 * 2);
+输出("当前帧：" + 帧);
+循环 i = 0; i < 10; i++ { 输出(i); }   // 括号可省略</code></pre>
+<p>完整的语言参考见 <code>SuperScript参考.html</code>。</p>
+
+<h2 id="mcp">内置 MCP 服务器（AI 驱动建模）</h2>
+<p>Super3D 内置一个 <b>MCP（Model Context Protocol）服务器</b>：AI 编程助手、大模型客户端等可以通过标准 MCP 协议直接连接 Super3D，用工具调用（<code>tools/call</code>）的方式读取、创建、修改场景元件，插入关键帧、加载示例、执行脚本——相当于给 AI 一把“远程操作” Super3D 的钥匙。</p>
+<h3>连接信息</h3>
+<ul>
+  <li><b>地址</b>：<code>http://127.0.0.1:8765/mcp</code>（JSON-RPC 2.0 over HTTP）；</li>
+  <li><b>启动方式</b>：Super3D 启动后自动监听，无需任何配置，关闭程序即停止；</li>
+  <li><b>安全</b>：仅监听本机回环 <code>127.0.0.1</code>，不对局域网/外网开放；</li>
+  <li><b>协议</b>：MCP <code>initialize</code>（2025-03-26）、<code>tools/list</code>、<code>tools/call</code>、<code>ping</code>、通知 <code>notifications/initialized</code>。</li>
+</ul>
+<h3>可用工具（tools/list）</h3>
+<table>
+  <tr><th>工具</th><th>说明</th><th>主要参数</th></tr>
+  <tr><td><code>list_objects</code></td><td>列出当前场景全部元件（名称/类型/变换/颜色/父级/子级）</td><td>—</td></tr>
+  <tr><td><code>get_object</code></td><td>查询单个元件的全部属性</td><td>name</td></tr>
+  <tr><td><code>add_primitive</code></td><td>添加图元（box/sphere/cylinder/cone/torus/plane/leaf/tube/rtube/roundbox/capsule/hemisphere/text3d/spline/lathe/extrude）</td><td>type、name、parent、x/y/z、rx/ry/rz、sx/sy/sz、r/g/b/alpha、p1/p2/p3、segments、text、points</td></tr>
+  <tr><td><code>add_group</code></td><td>添加组（MovieClip 容器），后续元件可指定 parent 放入其中</td><td>name、parent、x/y/z、rx/ry/rz、sx/sy/sz</td></tr>
+  <tr><td><code>set_points</code></td><td>设置轮廓/曲线控制点：spline 曲线路径点；lathe 母线（x=半径,y=高度，首尾半径为 0 自动封闭）；extrude 截面（x,z 闭合折线，凸/星形）</td><td>name、points（格式 x,y,z;x,y,z;...）</td></tr>
+  <tr><td><code>set_transform</code></td><td>设置元件位置/旋转/缩放（只改传入的字段）</td><td>name、x/y/z、rx/ry/rz、sx/sy/sz</td></tr>
+  <tr><td><code>set_color</code></td><td>设置元件颜色（0..1）</td><td>name、r/g/b</td></tr>
+  <tr><td><code>set_visible</code></td><td>设置元件可见性</td><td>name、visible</td></tr>
+  <tr><td><code>set_params</code></td><td>设置图元参数（box=长宽高 p1p2p3；cylinder/cone=半径p1、高p2；torus=半径p1、管粗p2；text3d=字高p1、厚度p2）</td><td>name、p1/p2/p3、segments</td></tr>
+  <tr><td><code>set_property</code></td><td>通用属性设置：x/y/z/rx/ry/rz/sx/sy/sz/r/g/b/visible/locked/segments/p1/p2/p3/text</td><td>name、property、value</td></tr>
+  <tr><td><code>rename</code></td><td>重命名元件</td><td>name、new_name</td></tr>
+  <tr><td><code>delete_object</code></td><td>删除元件（含子元件）</td><td>name</td></tr>
+  <tr><td><code>select</code></td><td>选中元件（name 为空=取消选中）</td><td>name</td></tr>
+  <tr><td><code>enter_group</code> / <code>exit_group</code></td><td>进入组内编辑 / 退出组编辑（回到上一层）</td><td>name</td></tr>
+  <tr><td><code>set_frame</code></td><td>跳到指定帧</td><td>frame</td></tr>
+  <tr><td><code>play</code> / <code>stop</code></td><td>播放 / 停止时间轴与脚本动画</td><td>—</td></tr>
+  <tr><td><code>load_sample</code></td><td>加载内置示例（Rocket/TankBattle/Willow/House 等）</td><td>name</td></tr>
+  <tr><td><code>new_scene</code></td><td>新建空白场景</td><td>—</td></tr>
+  <tr><td><code>save</code></td><td>保存当前工程（覆盖当前文件路径）</td><td>—</td></tr>
+  <tr><td><code>add_keyframe</code></td><td>在指定帧为元件插入关键帧（记录当前位置/旋转/缩放）</td><td>name、frame</td></tr>
+  <tr><td><code>execute_script</code></td><td>设置并立即执行脚本（kind=doc 文档类[默认]/scene 主场景脚本；播放开始时也会执行）</td><td>text、kind</td></tr>
+</table>
+<h3>调用示例</h3>
+<p>任意支持 MCP 的客户端（或直接 HTTP POST）向 <code>http://127.0.0.1:8765/mcp</code> 发送 JSON-RPC 请求：</p>
+<pre><code>POST /mcp  HTTP/1.1
+Host: 127.0.0.1:8765
+Content-Type: application/json
+
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"load_sample","arguments":{"name":"Rocket"}}}
+
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"list_objects","arguments":{}}}
+
+{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"execute_script","arguments":{"text":"trace(\"hello\");","kind":"doc"}}}</code></pre>
+<p>单次 <code>tools/call</code> 最长等待 15 秒；工具执行结果以 <code>content[0].text</code>（JSON 文本）返回。配合支持 MCP 的 AI 编程工具使用即可实现“AI 建模型、AI 做动画、AI 写脚本”的完整闭环。</p>
+
+<h2 id="examples">内置示例</h2>
+<p>【示例】菜单六个英文示例（每个示例一个独立文件夹，含同名 .s3d 与 .ss，磁盘优先加载）：</p>
+<table>
+  <tr><th>示例</th><th>文件夹</th><th>内容</th></tr>
+  <tr><td>House</td><td><code>sample\House\</code></td><td>小房子</td></tr>
+  <tr><td>Windmill</td><td><code>sample\Windmill\</code></td><td>荷兰风车（竖直叶片轮旋转，文档类控制）</td></tr>
+  <tr><td>SolarSystem</td><td><code>sample\SolarSystem\</code></td><td>太阳系（正弦/余弦公转）</td></tr>
+  <tr><td>BounceBall</td><td><code>sample\BounceBall\</code></td><td>弹跳球（上下弹跳）</td></tr>
+  <tr><td>DocClass</td><td><code>sample\DocClass\</code></td><td>文档类演示（mc 立方体持续旋转/缩放）</td></tr>
+  <tr><td>TankBattle</td><td><code>sample\TankBattle\</code></td><td>坦克大战（完整键盘事件驱动游戏）</td></tr>
+</table>
+
+<h2 id="files">工程文件说明</h2>
+<table>
+  <tr><th>文件</th><th>说明</th></tr>
+  <tr><td><code>src/CoreDefs.h</code></td><td>向量/相机/关键帧/图元类型等基础定义</td></tr>
+  <tr><td><code>src/Mat4.h</code></td><td>4×4 仿射矩阵（列主序，含逆矩阵）</td></tr>
+  <tr><td><code>src/Scene3D.h/.cpp</code></td><td>场景数据模型——元件树、本地编辑值与显示变换分离、关键帧平滑插值、射线拾取、六类图元三角网格</td></tr>
+  <tr><td><code>src/Script.h/.cpp</code></td><td>SuperScript 脚本引擎（手写词法/语法/解释器，防死循环上限 200 万步；支持 package/class 文档类语法）</td></tr>
+  <tr><td><code>src/ProjectIO.h/.cpp</code></td><td><code>.s3d</code> 工程存取（UTF-8+BOM 文本）与同名 <code>.ss</code> 文档类落盘</td></tr>
+  <tr><td><code>src/Examples.h/.cpp</code></td><td>内置示例场景（六个英文示例）</td></tr>
+  <tr><td><code>src/Renderer.h/.cpp</code></td><td>OpenGL 固定管线渲染（透视、方向光、地面网格、XYZ 轴、选中线框）</td></tr>
+  <tr><td><code>src/Super3D.h/.cpp</code></td><td>应用入口</td></tr>
+  <tr><td><code>src/MainWnd.h/.cpp</code></td><td>主窗口（中文大按钮工具栏、布局、播放计时、撤销、命令、.ss 编辑器与自动补全、文档 Tab）</td></tr>
+  <tr><td><code>src/ViewportWnd.h/.cpp</code></td><td>OpenGL 视口与鼠标交互</td></tr>
+  <tr><td><code>src/SceneTreeCtrl.h/.cpp</code></td><td>场景树</td></tr>
+  <tr><td><code>src/PropertiesPanel.h/.cpp</code></td><td>属性面板</td></tr>
+  <tr><td><code>src/TimelineWnd.h/.cpp</code></td><td>时间轴（标尺、关键帧、播放头、关键帧脚本）</td></tr>
+</table>
+
+<h2 id="known">已知说明</h2>
+<ul>
+  <li>顶层主窗口统一使用 <code>CWnd::CreateEx</code> 创建（部分环境下 <code>CWnd::Create</code> 空父窗口路径会异常，源码中已加注释）。</li>
+  <li>脚本单次执行模式下读写的是本地编辑值（对应属性面板），逐帧模式读写显示值（含补间结果）。</li>
+  <li>未含：材质贴图、灯光编辑、多视角视图（可作后续扩展）。</li>
+</ul>
+
+<h2 id="license">License</h2>
+<p>本软件按 <b>GNU General Public License v3.0</b>（GPL-3.0）发布——自由使用、修改与再分发需遵守 GPL-3.0 条款，详见工程 <code>LICENSE</code> 文件。</p>
+
+</main>
+</div>
+<footer style="background:#1b3a5c; color:#fff; padding:12px 28px; font-size:12.5px;">
+  Super3D © 2026 FMSer.CN · 联系方式：3781320752@qq.com · 本软件与本文档按 <b>GNU General Public License v3.0</b> 发布（详见工程 LICENSE 文件）。
+  配套参考：<a href="SuperScript参考.html" style="color:#9fc4e0;">SuperScript参考.html</a>（脚本语言参考）
+</footer>
+</body>
+</html>
